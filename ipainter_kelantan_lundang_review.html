@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leave a Google Review - iPainterDIY Kelantan Lundang</title>
+
+<style>
+:root{
+  --card:#121a2a;
+  --yellow:#f5c542;
+  --yellow-dark:#d4a72c;
+  --text:#f8f8f8;
+  --muted:#c9c9c9;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#0b0f17,#10162a);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:var(--text);
+}
+.wrap{max-width:820px;margin:0 auto;padding:24px}
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 14px 40px rgba(0,0,0,.45);
+  border:1px solid rgba(245,197,66,.15);
+}
+h1{margin:0 0 10px;font-size:24px;color:var(--yellow)}
+p{margin:0 0 14px;color:var(--muted);line-height:1.6}
+h3{margin:18px 0 10px;color:var(--yellow);font-size:16px}
+
+.options, .sales{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width:900px){
+  .options,.sales{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:600px){
+  .options,.sales{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:420px){
+  .options,.sales{grid-template-columns:1fr}
+}
+
+.option, .sales label{
+  display:flex;align-items:center;gap:10px;
+  background:#0f1628;
+  border:1px solid rgba(245,197,66,.25);
+  border-radius:14px;
+  padding:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+.option:hover, .sales label:hover{background:#141c33}
+.option input, .sales input{
+  accent-color:var(--yellow);
+  flex:0 0 auto;
+}
+
+textarea{
+  width:100%;
+  min-height:130px;
+  background:#0f1628;
+  border:1px solid rgba(245,197,66,.35);
+  border-radius:14px;
+  padding:14px;
+  color:#fff;
+  font-size:15px;
+  margin-top:10px
+}
+
+.btn{
+  width:100%;
+  padding:15px;
+  border-radius:14px;
+  border:none;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:12px
+}
+.copy{
+  background:linear-gradient(180deg,var(--yellow),var(--yellow-dark));
+  color:#000
+}
+.go{
+  background:#1b1b1b;
+  color:var(--yellow);
+  border:1px solid rgba(245,197,66,.4)
+}
+.ok{margin-top:8px;color:#7CFF7C;font-weight:700}
+.small{font-size:12px;color:var(--muted);margin-top:10px;word-break:break-all}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>⭐ Leave Us a Google Review</h1>
+    <p><strong>iPainterDIY Kelantan Lundang</strong></p>
+    <p>Select a review style and the sales consultant who assisted you.</p>
+
+    <h3>1️⃣ Review Style</h3>
+    <div class="options">
+      <label class="option">
+        <input type="radio" name="style" value="professional">
+        Professional & Reliable
+      </label>
+      <label class="option">
+        <input type="radio" name="style" value="friendly">
+        Friendly & Satisfied
+      </label>
+      <label class="option">
+        <input type="radio" name="style" value="detail">
+        Quality & Detail Focused
+      </label>
+      <label class="option">
+        <input type="radio" name="style" value="short">
+        Short & Premium
+      </label>
+    </div>
+
+    <h3>2️⃣ Sales Consultant (Optional)</h3>
+    <div class="sales">
+      <label><input type="radio" name="sales" value="Adilah">Adilah</label>
+      <label><input type="radio" name="sales" value="Yen">Yen</label>
+      <label><input type="radio" name="sales" value="Zaim">Zaim</label>
+      <label><input type="radio" name="sales" value="Firdaus">Firdaus</label>
+      <label><input type="radio" name="sales" value="Nick">Nick</label>
+    </div>
+
+    <textarea id="reviewText" placeholder="Your review will appear here"></textarea>
+
+    <button class="btn copy" onclick="copyText()">Copy Review Text</button>
+    <div id="status"></div>
+
+    <button class="btn go" onclick="goReview()">Open Google Review</button>
+
+    <div class="small" id="linkInfo"></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const FALLBACK = "https://www.google.com/search?sca_esv=6ea5d9d9d56a89d7&sxsrf=APpeQntyC1YjRLhYK41mGDahLwKAh1nFmA:1782803660448&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_2k5ewXGtY_L4dpGsrF8KFq5tho5Z4kHtHXUdOhMlQA9MlowlN29Vgm8YyBgZkDBjL-Kgm6jEn8XsLXF3yNDoP8Kka8RDlGYikv7PiGm2awPn1RiRA%3D%3D&q=iPainter+Lundang+Kelantan+Reviews&sa=X&ved=2ahUKEwjTlIqXta6VAxXdT2wGHSZHOYIQ0bkNegQILxAH&biw=1536&bih=703&dpr=1.25#lrd=0x31b6af9d8982852d:0xd101b5ac5e4b4944,3,,,,";
+const REVIEW_URL = params.get("u") ? decodeURIComponent(params.get("u")) : FALLBACK;
+document.getElementById("linkInfo").textContent = "Review link: " + REVIEW_URL;
+
+function buildReview(style, sales){
+  const name = sales ? `${sales} ` : "";
+  const prefix = sales ? `${sales} was ` : "The team was ";
+
+  const map = {
+    professional: `${prefix}professional and smooth from start to finish. The workmanship is neat and the final result looks great. Highly recommended.`,
+    friendly: `${name}provided friendly and responsive service throughout the process. Very satisfied with the overall experience.`,
+    detail: `${prefix}very attentive to detail and communicated clearly. The final result exceeded my expectations.`,
+    short: `Fast, professional and hassle-free service. The finished work looks premium and well done.`
+  };
+
+  return map[style] || "";
+}
+
+function updateText(){
+  const style = document.querySelector('input[name="style"]:checked')?.value;
+  const sales = document.querySelector('input[name="sales"]:checked')?.value;
+
+  if(style){
+    document.getElementById("reviewText").value = buildReview(style, sales);
+  }
+}
+
+document.querySelectorAll('input').forEach(i => i.addEventListener("change", updateText));
+
+document.querySelector('input[name="style"]').checked = true;
+updateText();
+
+async function copyText(){
+  const t = document.getElementById("reviewText").value;
+  if(!t) return;
+
+  try{
+    await navigator.clipboard.writeText(t);
+  }catch{
+    const ta = document.createElement("textarea");
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+
+  document.getElementById("status").innerHTML = '<div class="ok">✔ Review copied</div>';
+}
+
+function goReview(){
+  window.open(REVIEW_URL, '_blank');
+}
+</script>
+</body>
+</html>
